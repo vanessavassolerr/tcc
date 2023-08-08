@@ -1,1 +1,2 @@
 # tcc
+Este trabalho tem como intuito a construção de um protótipo de semáforo inteligente, sob a realidade do semáforo localizado na avenida Cônego Manoel Alves, situado ao lado da Faculdade de Tecnologia da Unicamp (FT). A partir do projeto será possível coletar informações sobre a quantidade de veículos circulantes na avenida com o auxílio de uma câmera que será instalada no semáforo e, posteriormente, será realizada a implantação de um protótipo que atenda a modelagem do fluxo de veículos obtida através do monitoramento.
