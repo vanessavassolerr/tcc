@@ -3,8 +3,8 @@ import cv2
 import sys
 from time import sleep
 
-VIDEO = "C:/Users/Vanessa/Desktop/TCC/contador-carros/tcc/rua_ft_cortada_teste.mp4"
-delay = 10
+VIDEO = "tcc/video_guarita_cortadao.mp4"
+delay = 2000
 algorithm_types = ['GMG', 'MOG2', 'MOG', 'KNN', 'CNT']
 
 #------------------------------------------------------------------------------------
@@ -56,12 +56,12 @@ def Subtractor(algorithm_type):
     
 #------------------------
 
-w_min = 70  # largura minima do retangulo
+w_min = 50  # largura minima do retangulo
+# w_max = 12000
 h_min = 50  # altura minima do retangulo
-w_max = 200
-h_max = 200
-offset = 0.01 # erro entre os pixels
-linha_ROI = 330  # Posição da linha de contagem
+# h_max = 5000
+offset = 1 # erro entre os pixels
+linha_ROI = 300  # Posição da linha de contagem
 carros = 0
 
 
@@ -82,21 +82,22 @@ def centroide(x, y, w, h):
 
 
 detec = []
+carros_contados = []  # Inicialize uma lista para rastrear carros já contados
+#nessa versao, pega somente carros da faixa da direita
 def set_info(detec):
     global carros
     for (x, y) in detec:
-        if (linha_ROI + offset) > y > (linha_ROI - offset):
-            carros += 1
-            cv2.line(frame, (300, linha_ROI), (500, linha_ROI), (500, 50, 255), 3)
-            detec.remove((x, y))
-            print("Carros detectados ate o momento: " + str(carros))
+        if (linha_ROI + offset) > y > (linha_ROI - offset) and (529) < x < (580):
+                    carros += 1
+                    cv2.line(frame, (550, linha_ROI), (600, linha_ROI + 20), (200, 000, 000), 2)  #linha via direita
+                    detec.remove((x, y)) 
+                    print("Veiculos detectados até o momento: " + str(carros))
 
 
 def show_info(frame, mask):
     text = f'Carros: {carros}'
     cv2.putText(frame, text, (450, 70), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 5)
     cv2.imshow("Video Original", frame)
-    cv2.imshow("Detectar", mask)
 
 
 
@@ -120,17 +121,20 @@ while True:
     mask = Filter(mask, 'combine')
     
     contorno, img = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    cv2.line(frame, (300, linha_ROI), (500,linha_ROI), (0, 127, 0), 5)
+    cv2.line(frame, (550, linha_ROI), (600, linha_ROI + 20), (0, 127, 25), 2) 
+
+
     for (i, c) in enumerate(contorno):
         (x, y, w, h) = cv2.boundingRect(c)
-        validar_contorno = ( w >= w_min) and (h >= h_min)
+        validar_contorno = (w >= w_min) and (h >= h_min)
         if not validar_contorno:
             continue
-
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
         centro = centroide(x, y, w, h)
         detec.append(centro)
         cv2.circle(frame, centro, 3, (0, 0, 255), -1)
+        print(centro)
+
 
     set_info(detec)
     show_info(frame, mask)
@@ -141,3 +145,6 @@ while True:
 
 cv2.destroyAllWindows()
 cap.release()
+
+#carros contados
+#59 até o mlk de shorts branco e blusa vermelha passando vindo do enxuto

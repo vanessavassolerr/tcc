@@ -1,0 +1,47 @@
+***************COORDENADAS DOS VEÍCULOS QUE PASSARAM PELO VÍDEO DA GUARITA*********
+###### FAIXA DIREITA ######
+cv2.line(frame, (550, linha_ROI), (600, linha_ROI + 20), (0, 127, 25), 2) 
+	eixo x começa em 550 e termina em 600
+	eixo y começa em 300 e termina em 320
+condição: 
+	if (linha_ROI + offset) > y > (linha_ROI - offset) and (529) < x < (580)
+Tuplas (x,y) de cada veículo que passou pela faixa da direita:
+	(568, 300) carro
+	(530, 300) moto
+	(579, 300) carro
+	(569, 300) carro
+	van q nao pegou
+	(561, 300) van --> (551, 300) contagem repetida
+	(531, 300) carro --> (534, 300) contagem repetida
+	(555, 300) carro
+	(548, 300) CARRO
+	1 carro nao contada
+	1 van nao contada
+	(420, 287) van
+	(452, 311) busao enorme (450, 309) (572, 300) (459, 301) (471, 311) --> contagens repetidas
+	(560, 300) busao enorme (532, 300) (534, 300) --> contagens repetidas
+	(542, 298) carro
+	(560, 300) carro
+
+TOTAL DE VEÍCULOS CONTADOS: 22
+TOTAL DE VEÍCULOS QUE PASSARAM: 16 
+ERRO: 6 (37% a mais)
+
+
+
+Medidas de carro: (568, 300), (579, 300), (569, 300), (531, 300), (555, 300). (548, 300), (542, 298), (560, 300)
+x: 531 ate 579
+y: 300
+
+Medidas de moto:
+x: 530
+
+Medidas de busao:
+x: 452, 560
+
+Medidas de van: 
+x: 420
+y: 287
+
+
+###### FAIXA ESQUERDA ######
