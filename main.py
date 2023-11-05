@@ -1,3 +1,4 @@
+import requests
 import numpy as np
 import cv2
 import sys
@@ -57,9 +58,7 @@ def Subtractor(algorithm_type):
 #------------------------
 
 w_min = 50  # largura minima do retangulo
-# w_max = 12000
 h_min = 50  # altura minima do retangulo
-# h_max = 5000
 offset = 1 # erro entre os pixels
 linha_ROI = 300  # Posição da linha de contagem
 carros = 0
@@ -102,7 +101,6 @@ def show_info(frame, mask):
 
 
 cap = cv2.VideoCapture(VIDEO) # lendo o vídeo
-
 fourcc = cv2.VideoWriter_fourcc(*'XVID') #codec do vídeo
 
 algorithm_type = algorithm_types[1]
@@ -123,7 +121,6 @@ while True:
     contorno, img = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     cv2.line(frame, (550, linha_ROI), (600, linha_ROI + 20), (0, 127, 25), 2) 
 
-
     for (i, c) in enumerate(contorno):
         (x, y, w, h) = cv2.boundingRect(c)
         validar_contorno = (w >= w_min) and (h >= h_min)
@@ -133,6 +130,7 @@ while True:
         centro = centroide(x, y, w, h)
         detec.append(centro)
         cv2.circle(frame, centro, 3, (0, 0, 255), -1)
+        #contar na borda do veiculo
         print(centro)
 
 
@@ -146,5 +144,12 @@ while True:
 cv2.destroyAllWindows()
 cap.release()
 
-#carros contados
-#59 até o mlk de shorts branco e blusa vermelha passando vindo do enxuto
+
+url = "http://127.0.0.1:8080"
+response = requests.post(url, data=carros)
+
+if response.status_code == 200:
+    print("Requisição bem-sucedida")
+    print("Resposta:", response.text)
+else:
+    print("A requisição falhou. Código de status:", response.status_code)
