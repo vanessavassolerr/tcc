@@ -1,8 +1,10 @@
 import numpy as np
 import cv2
 import sys
-from time import sleep
+import time
 
+ultima_impressao = time.time() 
+carros_ultimos_15s = 0
 VIDEO = "tcc/video/visao_guarita_v1.mp4"  # Caminho do vídeo
 algorithm_types = ['GMG', 'MOG2', 'MOG', 'KNN', 'CNT']
 
@@ -90,26 +92,32 @@ veiculos = []
 
 def set_info(detec):
     global carros
+    global carros_ultimos_15s
+    global ultima_impressao
     global veiculos
-
     for veiculo in veiculos:
         veiculo.frames_desde_ultima_vista += 1
     for centro in detec:
         if (298) < centro[1] < (313):  # condição de linha de contagem
             novo_veiculo = True
             # Verificar se o centro está perto de um veículo existente
-            for veiculo in veiculos:
+            for veiculo in veiculos: 
                 distancia = np.linalg.norm(np.array(centro) - np.array(veiculo.posicao))
                 if distancia < 120 and veiculo.frames_desde_ultima_vista < 30:  # 30 é um valor de exemplo
                     novo_veiculo = False
                     veiculo.posicao = centro  # Atualiza a posição do veículo
-                    veiculo.frames_desde_ultima_vista = 0  # Reseta o contador
+                    veiculo.frames_desde_ultima_vista = 0  # Reseta o contado
                     break
             
             if novo_veiculo:
                 carros += 1
+                carros_ultimos_15s += 1  # Incrementa a contagem para os últimos 15 segundos
                 veiculos.append(Veiculo(centro))
-                print("Carros detectados até o momento: " + str(carros))
+
+            if time.time() - ultima_impressao > 15:
+                print("Veículos detectados nos últimos 15 segundos: " + str(carros_ultimos_15s))
+                ultima_impressao = time.time() 
+                carros_ultimos_15s = 0  # Reseta a contagem para os próximos 15 segundos
 
 
 def show_info(frame):
@@ -123,6 +131,7 @@ fourcc = cv2.VideoWriter_fourcc(*'XVID') #codec do vídeo
 
 algorithm_type = algorithm_types[1]
 background_subtractor = Subtractor(algorithm_type)  # pega o fundo e subtrai do que se movendo
+
 
 while True:
     ok, frame = cap.read() # pega cada frame do vídeo
@@ -145,13 +154,10 @@ while True:
         centro = centroide(x, y, w, h)
         detec.append(centro)
         cv2.circle(frame, centro, 3, (0, 0, 255), -1)
-        print(centro)
-    
-
+      #  print(centro)
 
     set_info(detec)
     show_info(frame)
-
 
 
     if cv2.waitKey(1) == 27: #ESC
