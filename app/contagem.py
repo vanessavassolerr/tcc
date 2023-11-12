@@ -1,3 +1,4 @@
+import paho.mqtt.publish as publish
 import numpy as np
 import cv2
 import sys
@@ -10,11 +11,20 @@ algorithm_types = ['GMG', 'MOG2', 'MOG', 'KNN', 'CNT']
 
 
 # Variáveis de configuração
-
 w_min = 45  # largura minima do retangulo
 h_min = 45  # altura minima do retangulo
 carros = 0
 
+mqtt_broker = "broker.hivemq.com"
+mqtt_port = 1883
+mqtt_topic = "esp32/topic"
+
+def publicar_contagem():
+    try:
+        publish.single(mqtt_topic, carros_ultimos_15s, hostname=mqtt_broker, port=mqtt_port)
+        print(f"Publicado {carros_ultimos_15s} no tópico MQTT.")
+    except Exception as e:
+        print(f"Erro ao publicar: {e}")
 
 #------------------------------------------------------------------------------------
 
@@ -89,7 +99,7 @@ class Veiculo:
 
 detec = []
 veiculos = []
-
+carros_ultimos_15s = 0
 def set_info(detec):
     global carros
     global carros_ultimos_15s
@@ -116,9 +126,10 @@ def set_info(detec):
 
             if time.time() - ultima_impressao > 15:
                 print("Veículos detectados nos últimos 15 segundos: " + str(carros_ultimos_15s))
+                publicar_contagem()
                 ultima_impressao = time.time() 
                 carros_ultimos_15s = 0  # Reseta a contagem para os próximos 15 segundos
-
+                
 
 def show_info(frame):
     text = f'Carros: {carros}'

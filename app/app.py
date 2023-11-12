@@ -16,13 +16,13 @@ mqtt_topic = "esp32/topic"
 def teste():
     return 'Teste'
 
-@app.route('/contagem', methods=['POST'])
-def contagem():
+@app.route('/enviar_contagem', methods=['POST'])
+def contagem_carros():
     try:
         veiculos = contagem.carros_ultimos_15s
         # Enviar a resposta para o ESP32 via MQTT
         publish.single(mqtt_topic, veiculos, hostname=mqtt_broker, port=mqtt_port)
-        print(veiculos)
+        print(f"Enviando {veiculos} veículos para o MQTT.")
         return jsonify({"Veiculos contados nos ultimos 15 segundos:": veiculos})
     except Exception as e:
         return f'Erro: {str(e)}'
